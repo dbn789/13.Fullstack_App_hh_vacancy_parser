@@ -1,0 +1,17 @@
+axios.default.defaults.headers.common = {
+Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+'Accept-Encoding': 'gzip, deflate, br, zstd',
+'Accept-Language': 'ru,en;q=0.9',
+'Cache-Control': 'max-age=0',
+Cookie: '__ddg1_=b09yaFnpNs0jNZmvsRGU; hhuid=z00Q2AzA4Gn2Z2TRF0MxpQ--; tmr_lvid=6822e1a49f115cb3ba92402f4f52f468; tmr_lvidTS=1691424579955; _ym_uid=1691424581440487421; _ga=GA1.2.309652755.1691424581; iap.uid=92ee205e3af74d7484b22ff90e64eb03; __zzatgib-w-hh=MDA0dBA=Fz2+aQ==; _xsrf=ef120702a969967b155dd14db6dfaddb; hhrole=anonymous; display=desktop; crypted_hhuid=389D996F6A10486C3F5D1917625C7FFF4FD5482C84045F28BA6B4BFFC55BCB52; hhtoken=eCHJ0SlgSreiWDIE9TU6BywOHaN_; GMT=7; redirect_host=hh.ru; region_clarified=hh.ru; hhrole=anonymous; _ym_d=1711531127; device_magritte_breakpoint=l; device_breakpoint=l; __zzatgib-w-hh=MDA0dBA=Fz2+aQ==; domain_sid=KhflL7xmkmVkPfg6mAF6i%3A1714953978608; total_searches=1; regions=54; tmr_detect=0%7C1714987631188; gsscgib-w-hh=WJH+FPRDszFx1AE4i3Z1ilvbNCvmwZrf9jDSM5SkuPldHjb7N9fNvUJchKqD1TZTbMEF2kdveVa0gjugAKGnREueU3+b9vSLzZrkPk4kwM0W4qCcpNs2AUIEGOFUI9J7kZ9I582exf2VdFmQedfW6f6wjwCU4EcG/tizUZz+tG7dFYCVPXKks2LJMzjJgl4U2ko4gpKU6jMyZz7oo6IdWap4+AUIVlbOk68Rmhg9umvOaRQxwDj1bika8qlPcw==; cfidsgib-w-hh=7v8ZvfDMRkc1XbP63uNNOXRaqPWj1krco63jU7h05sTmKweyfh01xxQutpuyrNFGgiSqR/HkwOinv7uM13YH3rl+Lhn8gjVP1Hj4cPlYui0q3mVkI+CaXbbJ06d2up+5AqWX6I2B5VfoNN/AM1x6bvw1p0iHautXajvdvYQ=; cfidsgib-w-hh=7v8ZvfDMRkc1XbP63uNNOXRaqPWj1krco63jU7h05sTmKweyfh01xxQutpuyrNFGgiSqR/HkwOinv7uM13YH3rl+Lhn8gjVP1Hj4cPlYui0q3mVkI+CaXbbJ06d2up+5AqWX6I2B5VfoNN/AM1x6bvw1p0iHautXajvdvYQ=; cfidsgib-w-hh=7v8ZvfDMRkc1XbP63uNNOXRaqPWj1krco63jU7h05sTmKweyfh01xxQutpuyrNFGgiSqR/HkwOinv7uM13YH3rl+Lhn8gjVP1Hj4cPlYui0q3mVkI+CaXbbJ06d2up+5AqWX6I2B5VfoNN/AM1x6bvw1p0iHautXajvdvYQ=; gsscgib-w-hh=WJH+FPRDszFx1AE4i3Z1ilvbNCvmwZrf9jDSM5SkuPldHjb7N9fNvUJchKqD1TZTbMEF2kdveVa0gjugAKGnREueU3+b9vSLzZrkPk4kwM0W4qCcpNs2AUIEGOFUI9J7kZ9I582exf2VdFmQedfW6f6wjwCU4EcG/tizUZz+tG7dFYCVPXKks2LJMzjJgl4U2ko4gpKU6jMyZz7oo6IdWap4+AUIVlbOk68Rmhg9umvOaRQxwDj1bika8qlPcw==; gsscgib-w-hh=WJH+FPRDszFx1AE4i3Z1ilvbNCvmwZrf9jDSM5SkuPldHjb7N9fNvUJchKqD1TZTbMEF2kdveVa0gjugAKGnREueU3+b9vSLzZrkPk4kwM0W4qCcpNs2AUIEGOFUI9J7kZ9I582exf2VdFmQedfW6f6wjwCU4EcG/tizUZz+tG7dFYCVPXKks2LJMzjJgl4U2ko4gpKU6jMyZz7oo6IdWap4+AUIVlbOk68Rmhg9umvOaRQxwDj1bika8qlPcw==; fgsscgib-w-hh=86io6252abe584807f114b1f7a3e9a71289b6a4d; fgsscgib-w-hh=86io6252abe584807f114b1f7a3e9a71289b6a4d',
+Priority: 'u=0, i',
+'Sec-Ch-Ua': '"Chromium";v="124", "Microsoft Edge";v="124", "Not-A.Brand";v="99"',
+'Sec-Ch-Ua-Mobile': '?0',
+'Sec-Ch-Ua-Platform': "Windows",
+'Sec-Fetch-Dest': 'document',
+'Sec-Fetch-Mode': 'navigate',
+'Sec-Fetch-Site': 'none',
+'Sec-Fetch-User': '?1',
+'Upgrade-Insecure-Requests': '1',
+'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0',
+}

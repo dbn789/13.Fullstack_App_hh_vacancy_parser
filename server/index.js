@@ -11,7 +11,7 @@ mongoose
 
 const EventEmitter = require('events')
 
-const { runService1, runService2, runService3, runService4, runService5, runService6, runService7, runService8 } = require('./workers/workerConstructor')
+const { runService1, runService2, runService3, runService4, runService5, runService6, runService7, runService8, runService9, runService10, runService11, runService12 } = require('./workers/workerConstructor')
 
 const emitter = new EventEmitter()
 const app = express()
@@ -87,7 +87,7 @@ const parsingVacancies = async (numArray) => {
 
 
 const begin = async (num) => {
-    const promiseArray = [runService1(num), runService2(num + 125000), runService3(num + 250000), runService4(num + 375000), runService5(num + 500000), runService6(num + 625000), runService7(num + 750000), runService8(num + 875000)]
+    const promiseArray = [runService1(num), runService2(num + 125000), runService3(num + 250000), runService4(num + 375000), runService5(num + 500000), runService6(num + 625000), runService7(num + 750000), runService8(num + 875000), runService9(num + 1000000), runService10(num + 1125000), runService11(num + 1250000), runService12(num + 1375000)]
     Promise.allSettled(promiseArray).then(res => console.log(res))
 }
 
@@ -95,9 +95,9 @@ const begin = async (num) => {
 fs.readFile(__dirname + '/workers/data/firm-parsed.txt', (err, data) => {
     const numbers = data.toString().trim().split('\n').map(Number)
     console.log(numbers)
-    //begin(numbers.at(-1)).catch(e => console.log(e))
+    begin(numbers.at(-1)).catch(e => console.log(e))
 
-    parsingVacancies(numbers.reverse());
+    // parsingVacancies(numbers.reverse());
 })
 
 //app.use('/', (req, res) => res.setHeader('Access-Control-Allow-Origin', '*'))
