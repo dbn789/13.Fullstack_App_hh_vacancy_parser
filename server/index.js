@@ -17,7 +17,7 @@ const emitter = new EventEmitter()
 const app = express()
 const PORT = process.env.port || 5000
 const vacancyArray = []
-let count = 0, num = 0;
+let counter = 0;
 
 
 
@@ -26,11 +26,11 @@ app.use(express.json())
 const delay = async (vac) => {
     fs.appendFile(__dirname + '/workers/data/data.txt', `${vac.number}\n${vac.name}\n${vac.id}\n${vac.exp}\n${vac.remote}\n${vac.city}\n${vac.price_from}-${vac.price_to}\n-----------------------------\n`, () => { })
     vacancyArray.push(vac)
-    count++
+    counter++
     return new Promise(resolve => setTimeout(() => {
         emitter.emit('new-vacancy');
         resolve()
-    }, 1000));
+    }, 500));
 }
 
 const parse = async (array) => {
@@ -44,7 +44,7 @@ const parse = async (array) => {
             default: { }
         }
         const vacancy = {
-            number: count + 1,
+            number: counter + 1,
             id: vac.vacancyId,
             name: vac.name,
             price_from: vac.compensation?.from,
@@ -62,25 +62,26 @@ const run = async (firm, page) => {
     try {
         const response = await axios.get(url)
         if (response.data.count) {
-            //  console.log(`FIRM ${firm}`, response.data.vacancies[0].company.name, 'PAGE ', page, ' COUNT', response.data.count)
             fs.appendFile(__dirname + '/workers/data/data.txt', `---------------${response.data.vacancies[0].company.name}---------------\n`, () => { })
             await parse(response.data.vacancies)
             if (response.data.hasNextPage) await run(firm, ++page)
+            return page * 30 + response.data.count
         } else {
-            console.log(`NO VACANCYES IN FIRM ${firm}`)
-            if (count > num) setTimeout(() => emitter.emit('new-vacancy'), 1000)
+            return 0
         }
 
     } catch (e) {
-        console.log('NO DATA')
-        if (count > num) setTimeout(() => emitter.emit('new-vacancy'), 1000)
+        return 0
     }
 }
 
 const parsingVacancies = async (numArray) => {
 
     for await (let numPage of numArray) {
-        await run(numPage, 0)
+        const result = await run(numPage, 0)
+        result
+            ? console.log(`Finded ${result} vacancies in firm ${numPage}`)
+            : console.log(`No vacancies in firm ${numPage}`)
     }
 }
 
@@ -95,18 +96,16 @@ const begin = async (num) => {
 fs.readFile(__dirname + '/workers/data/firm-parsed.txt', (err, data) => {
     const numbers = data.toString().trim().split('\n').map(Number)
     console.log(numbers)
-    begin(numbers.at(-1)).catch(e => console.log(e))
+    // begin(numbers.at(-1)).catch(e => console.log(e))
 
-    // parsingVacancies(numbers.reverse());
+    parsingVacancies(numbers.reverse());
 })
 
-//app.use('/', (req, res) => res.setHeader('Access-Control-Allow-Origin', '*'))
 
 app.get('/', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
     emitter.once('new-vacancy', () => {
-        res.send(vacancyArray[num])
-        num++
+        res.send(vacancyArray[counter - 1])
     })
 
 })
