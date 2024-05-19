@@ -42,7 +42,7 @@ body {
 }
 .page-count {
     position: absolute;
-    right: 1vw;
+    right: 0.75vw;
     top: 1vh;
     font-weight: 700;
     font-size: 25px;

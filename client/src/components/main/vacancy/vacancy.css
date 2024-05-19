@@ -42,6 +42,7 @@
 .job-found:hover {
     border: 0.3rem solid #0efff9;
 }
+
 .job__header {
     height: 35%;
     font-weight: var(--weight-bold);
@@ -69,12 +70,31 @@
 .job__skills{
     position: absolute;
     background-color: #102f51;
-    left: 50%;
+    width: 70%;
+    left: 0;
     top: 0;
     z-index: 1;
     color: coral;
 }
+.job__skills-table{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    position: absolute;
+    background-color: #102f51;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    color: coral;
+    height: 100%;
+}
 .table-row{
     border: 0.5px solid white;
-    padding: 5px 2px;
+  padding: 5px 2px;
+}
+.job-not-good{
+    opacity: 0.5;
+}
+.job-not-good:hover{
+    opacity: 1;
 }

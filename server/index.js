@@ -52,6 +52,7 @@ const parse = async (array) => {
             city: vac.area.name,
             remote: remote,
             exp: vac.workExperience,
+            skills: [],
         }
         await delay(vacancy)
     }

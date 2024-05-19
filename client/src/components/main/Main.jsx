@@ -3,7 +3,7 @@ import './main.css';
 import { useDispatch, useSelector } from 'react-redux';
 
 import VacancyList from './vacancy/VacancyList';
-import { addVacancy } from '../../reducers/hhReduser';
+import { addVacancy, selectAllVacancies } from '../../reducers/hhReduser';
 
 import axios from 'axios';
 
@@ -15,8 +15,10 @@ const Main = () => {
    // const [vacancyArray, setVacancyArray] = useState([]);
     let isError = 'hidden';
     const dispatch = useDispatch();
-    const state = useSelector((state) => state.hhReducer);
-    console.log('COUNT= ', count)
+    const length = useSelector((state) => state.hhReducer.vacancies.length);
+
+    //console.log('LENGTH',length)
+    //console.log('COUNT= ', count)
 
     const handleNext = () => {
         setVacancyPage(vacancyPage + 1);
@@ -45,11 +47,11 @@ const Main = () => {
 
     return (
         <div>
-            {state.vacancies.length && !error && (
+            {length && !error && (
                 <VacancyList vacancyPage={vacancyPage} />
             )}
             <div className="page-count">
-                {`${vacancyPage} / ${Math.round( state.vacancies.length / 20) + 1}`}
+                {`${vacancyPage} / ${Math.floor( length / 20) + 1}`}
             </div>
             <div className="prev-page" onClick={handlePrev}>
                 {'<'}

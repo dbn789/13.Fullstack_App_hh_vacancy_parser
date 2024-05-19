@@ -1,58 +1,52 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-/*const parseVacancySkills = async (id) => {
-    console.log('IN ACTION', id);
-    const url = `https://api.hh.ru/vacancies/${id}`;
+const initialState = {
+    vacancies: [],
+}
 
-    let goodVacancy = false;
-    try {
+export const parseVacancySkills = createAsyncThunk('hhReducer/parseVacancySkills',
+    async (data) => {
+
+        const url = `https://api.hh.ru/vacancies/${data.id}`;
+
         const response = await axios.get(url);
-        const skills = response.data.key_skills
-
-        if (skills.includes('JavaScript') || skills.includes('Node.js'))
-            goodVacancy = true;
-
-        return skills.map(el => el.name)
-    } catch (e) {
-        return null
-    }
-}*/
+        const skills = response.data.key_skills.map(el => el.name)
+        return { index: +data.number - 1, skills: skills }
+    })
 
 
 const hhSlice = createSlice({
     name: 'hhReducer',
-    initialState: {
-        vacancies: [],
-        status: null,
-        error: null,
-    },
+    initialState,
     reducers: {
         changeStatus(state, action) {
             console.log('CHANGE STATUS', action.payload);
-            state.status = action.payload;
+            // state.status = action.payload;
         },
         addVacancy(state, action) {
-            console.log('ADD VACANCY', action.payload);
-            state.vacancies.push(action.payload);
-            console.log(state.vacancies)
+            //console.log('ADD VACANCY', action.payload);
+            state.vacancies.push(action.payload)
         },
     },
-    /*extraReducers: (builder) => {
-        builder.addCase(parseVacancy.pending, (state, action) => {
-            state.status = 'pending';
-        });
-        builder.addCase(parseVacancy.fulfilled, (state, action) => {
-            console.log('IN REDUCER', action.payload);
-            state.vacancies.push(action.payload);
-            state.status = 'resolved';
-        });
-        builder.addCase(parseVacancy.rejected, (state, action) => {
-            state.status = 'error';
-            console.log('VACANCY NOT PARSED!');
-        });
-    },*/
+    extraReducers: (builder) => {
+        builder
+            .addCase(parseVacancySkills.pending, (state, action) => {
+                //state.status = 'pending';
+            })
+            .addCase(parseVacancySkills.fulfilled, (state, action) => {
+                const { index, skills } = action.payload;
+                const el = state.vacancies[index]
+                el.skills = skills
+                state.vacancies.splice(index, 1, el)
+            })
+            .addCase(parseVacancySkills.rejected, (state, action) => {
+                // state.status = 'error';
+                console.log('SKILLS NOT PARSED!');
+            });
+    },
 });
+
 
 export const { changeStatus, addVacancy } = hhSlice.actions;
 export default hhSlice.reducer;
