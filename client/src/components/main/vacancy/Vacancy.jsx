@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './vacancy.css';
 
-const Vacancy = ({ vacancy, showSkills}) => {
+const Vacancy = ({ vacancy}) => {
     const { number, id, name, price_from, price_to, city, exp, remote, skills} = vacancy;
-    if (skills.length) console.log('SKILLS', skills)
+   
     const [skillsArray, setSkillsArray] = useState([])
     const [skillsFlag, setSkillsFlag] = useState(false)
-   // const state = useSelector((state) => state.hhReducer.vacancies);
+   
     let jobFound = (exp === 'NO_EXPERIENCE' || (remote === 'REMOTE' && exp !== 'MORE_THAN_6' && exp !== 'BETWEEN_3_AND_6')) ? 'job-found' : '';
     let notGood = (exp === 'MORE_THAN_6' || exp === 'BETWEEN_3_AND_6') ? 'job-not-good' : ''
     let title = (name.length > 50) ? name.slice(0, 50) + '...' : name
@@ -33,7 +33,7 @@ setTimeout(()=> setSkillsArray([]), 3000)
             onClick={() =>
                 window.open(`https://krasnoyarsk.hh.ru/vacancy/${id}`, '_blank')
             }
-            onMouseEnter={()=> {!skillsArray.length ? showSkills(id, number): setSkillsFlag(true)}}
+            onMouseEnter={()=> setSkillsFlag(true)}
            // onMouseLeave={()=> setSkillsFlag(false)}
         >
             <div className="job__header">{title}</div>
@@ -48,4 +48,4 @@ setTimeout(()=> setSkillsArray([]), 3000)
     );
 };
 
-export default React.memo(Vacancy);
+export default Vacancy;
