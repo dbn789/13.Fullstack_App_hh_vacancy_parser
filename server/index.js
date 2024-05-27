@@ -10,6 +10,7 @@ const emitter = new EventEmitter()
 const app = express()
 const PORT = process.env.port || 5000
 const vacancyArray = []
+let unuqueIdsSet;
 let counter = 0;
 
 
@@ -29,54 +30,74 @@ const parseVacancySkills = async (data) => {
     ]
     const url = `https://api.hh.ru/vacancies/${data.id}`;
     let flag = false
-
-    const response = await axios.get(url);
-    const skills = response.data.key_skills.map(el => el.name)
-    console.log(skills)
-    skills.forEach(skill => {
-        if (userSkills.includes(skill.toLowerCase())) flag = true
-    })
-    return [flag, skills]
+    try {
+        const response = await axios.get(url);
+        const skills = response.data.key_skills.map(el => el.name)
+        //console.log(skills)
+        skills.forEach(skill => {
+            if (userSkills.includes(skill.toLowerCase())) flag = true
+        })
+        return [flag, skills]
+    } catch (e) {
+        console.log(`NO PARSING THIS VACANCY ${data.id}`)
+        return [flag, []]
+    }
 }
 
 
 const delay = async (vac) => {
-    //fs.appendFile(__dirname + '/workers/data/data.txt', `${vac.number}\n${vac.name}\n${vac.id}\n${vac.exp}\n${vac.remote}\n${vac.city}\n${vac.price_from}-${vac.price_to}\n-----------------------------\n`, () => { })
-    const [isGoodVacancy, skills] = await parseVacancySkills(vac)
+    const isGoodVacancy = true
+    // const [isGoodVacancy, skills] = await parseVacancySkills(vac)
+    // console.log(vac)
     if (isGoodVacancy) {
-        vac.skills = skills
+        fs.appendFile(__dirname + '/workers/data/vacancies.txt', `${vac.id}\n`, () => { })
+        // vac.skills = skills
         vacancyArray.push(vac)
         counter++
         return new Promise(resolve => setTimeout(() => {
             emitter.emit('new-vacancy');
             resolve()
-        }, 500));
+        }, 100));
     }
-    return new Promise.resolve()
+    return new Promise(resolve => setTimeout(() => {
+        resolve()
+    }, 100));
 }
 
 const parse = async (array) => {
 
     for await (let vac of array) {
-        let remote;
-        switch (vac.workSchedule) {
-            case 'REMOTE': { remote = 'УДАЛЁННАЯ РАБОТА'; break }
-            case 'FULL_DAY': { remote = 'ОФИС'; break }
-            case 'FLEXIBLE': { remote = 'ГИБРИДНЫЙ ГРАФИК'; break }
-            default: { }
+        if (!unuqueIdsSet.has(+vac.vacancyId)) {
+            unuqueIdsSet.add(vac.vacancyId)
+
+            let remote, skills = []
+            switch (vac['@workSchedule']) {
+                case 'remote': { remote = 'УДАЛЁННАЯ РАБОТА'; break }
+                case 'full_day': { remote = 'ОФИС'; break }
+                case 'flexible': { remote = 'ГИБРИДНЫЙ ГРАФИК'; break }
+                default: { }
+            }
+            if (vac.snippet.skill) {
+                const temp = vac.snippet.skill
+                skills = temp.split(', ')
+                //console.log(skills)
+            }
+            const vacancy = {
+                number: counter + 1,
+                id: vac.vacancyId,
+                name: vac.name,
+                price_from: vac.compensation?.from,
+                price_to: vac.compensation?.to,
+                city: vac.area.name,
+                remote: remote,
+                exp: vac.workExperience,
+                responsesCount: vac.responsesCount,
+                totalResponsesCount: vac.totalResponsesCount,
+                skills: skills,
+            }
+            console.log(vacancy.number, vacancy.id)
+            await delay(vacancy)
         }
-        const vacancy = {
-            number: counter + 1,
-            id: vac.vacancyId,
-            name: vac.name,
-            price_from: vac.compensation?.from,
-            price_to: vac.compensation?.to,
-            city: vac.area.name,
-            remote: remote,
-            exp: vac.workExperience,
-            skills: [],
-        }
-        await delay(vacancy)
     }
 }
 
@@ -101,11 +122,13 @@ const run = async (firm, page) => {
 const parsingVacancies = async (numArray) => {
 
     for await (let numPage of numArray) {
-        const result = await run(numPage, 0)
+        // const result = await run(numPage, 0)
+        const result = await parsingRelatedVacancies(numPage)
         result
-            ? console.log(`Finded ${result} vacancies in firm ${numPage}`)
-            : console.log(`No vacancies in firm ${numPage}`)
+            ? console.log(`Finded ${result} related vacancies in ${numPage}`)
+            : console.log(`No related vacancies in ${numPage}`)
     }
+    infinityLoop(numArray.length)
 }
 
 
@@ -127,27 +150,32 @@ const getData = async (vacancyId, page = 0) => {
 const parsingRelatedVacancies = async (vacancyId) => {
     const res = await getData(vacancyId)
     const totalPages = res.totalPages
-    for (let i = 0; i < totalPages; i++) {
+    console.log(totalPages)
+    let i = 0;
+    while (i < totalPages) {
         const result = await getData(vacancyId, i)
-        const vacArray = result.vacancies
-        vacArray.forEach(vac => {
-            if (vac.workExperience === 'noExperience') console.log(vac)
-        })
+        const vacArray = result.vacancies || []
+        await parse(vacArray)
+        i++
     }
+    return res.resultsFound
 }
 
 
+const infinityLoop = (start) => {
+    fs.readFile(__dirname + '/workers/data/vacancies.txt', (err, data) => {
+        const numbers = data.toString().trim().split('\n').map(Number)
+        unuqueIdsSet = new Set(numbers)
+        console.log(numbers)
+        // begin(numbers.at(-1)).catch(e => console.log(e))
+        // const resumeId = 'f80c29ee000cb7201b0087cb9a38386a30577a';
+        parsingVacancies(numbers.slice(start));
 
-fs.readFile(__dirname + '/workers/data/firm-parsed.txt', (err, data) => {
-    const numbers = data.toString().trim().split('\n').map(Number)
-    console.log(numbers)
-    // begin(numbers.at(-1)).catch(e => console.log(e))
-    // const resumeId = 'f80c29ee000cb7201b0087cb9a38386a30577a';
-    parsingVacancies(numbers.reverse());
+    })
+}
 
-    //parsingRelatedVacancies(97806293)
+infinityLoop(0)
 
-})
 
 
 app.get('/', (req, res) => {

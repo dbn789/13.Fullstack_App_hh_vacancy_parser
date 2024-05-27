@@ -15,7 +15,7 @@ const VacancyList = ({ vacancyPage }) => {
    
     const allVacancies = state.vacancies;
     const vacancies = allVacancies.slice(start, end);
-    console.log(vacancies)
+    
 
     return (
         <div className="container">
@@ -29,4 +29,4 @@ const VacancyList = ({ vacancyPage }) => {
     );
 };
 
-export default VacancyList;
+export default React.memo(VacancyList);
