@@ -13,14 +13,25 @@ const vacancyArray = []
 let unuqueIdsSet;
 let counter = 0;
 
-
-
 app.use(express.json())
 
-const parseVacancySkills = async (data) => {
+const delay = async (vac) => {
+
+    fs.appendFile(__dirname + '/workers/data/vacancies.txt', `${vac.id}\n`, () => { })
+    vacancyArray.push(vac)
+    counter++
+    return new Promise(resolve => setTimeout(() => {
+        emitter.emit('new-vacancy');
+        resolve()
+    }, 100));
+}
+
+const parse = async (array) => {
     const userSkills = [
         'html',
+        'html5',
         'css',
+        'css3',
         'javascript',
         'node.js',
         'js',
@@ -28,60 +39,34 @@ const parseVacancySkills = async (data) => {
         'redux',
         'reactjs'
     ]
-    const url = `https://api.hh.ru/vacancies/${data.id}`;
-    let flag = false
-    try {
-        const response = await axios.get(url);
-        const skills = response.data.key_skills.map(el => el.name)
-        //console.log(skills)
-        skills.forEach(skill => {
-            if (userSkills.includes(skill.toLowerCase())) flag = true
-        })
-        return [flag, skills]
-    } catch (e) {
-        console.log(`NO PARSING THIS VACANCY ${data.id}`)
-        return [flag, []]
-    }
-}
-
-
-const delay = async (vac) => {
-    const isGoodVacancy = true
-    // const [isGoodVacancy, skills] = await parseVacancySkills(vac)
-    // console.log(vac)
-    if (isGoodVacancy) {
-        fs.appendFile(__dirname + '/workers/data/vacancies.txt', `${vac.id}\n`, () => { })
-        // vac.skills = skills
-        vacancyArray.push(vac)
-        counter++
-        return new Promise(resolve => setTimeout(() => {
-            emitter.emit('new-vacancy');
-            resolve()
-        }, 100));
-    }
-    return new Promise(resolve => setTimeout(() => {
-        resolve()
-    }, 100));
-}
-
-const parse = async (array) => {
 
     for await (let vac of array) {
-        if (!unuqueIdsSet.has(+vac.vacancyId)) {
+        let remote, exp;
+
+        const skills = vac['snippet']['skill']?.split(', ') ?? []
+        const isGoodVacancy = skills.some(skill => {
+            return (userSkills.includes(skill.toLowerCase())) ? true : false
+        })
+
+        if (!unuqueIdsSet.has(+vac.vacancyId) && isGoodVacancy) {
+
             unuqueIdsSet.add(vac.vacancyId)
 
-            let remote, skills = []
             switch (vac['@workSchedule']) {
                 case 'remote': { remote = 'УДАЛЁННАЯ РАБОТА'; break }
                 case 'full_day': { remote = 'ОФИС'; break }
                 case 'flexible': { remote = 'ГИБРИДНЫЙ ГРАФИК'; break }
                 default: { }
             }
-            if (vac.snippet.skill) {
-                const temp = vac.snippet.skill
-                skills = temp.split(', ')
-                //console.log(skills)
+
+            switch (vac['workExperience']) {
+                case 'noExperience': { exp = 'нет опыта'; break }
+                case 'between1And3': { exp = 'от 1 года до 3 лет'; break }
+                case 'between3And6': { exp = 'от 3 до 6 лет'; break }
+                case 'moreThan6': { exp = 'более 6 лет'; break }
+                default: { }
             }
+
             const vacancy = {
                 number: counter + 1,
                 id: vac.vacancyId,
@@ -90,7 +75,7 @@ const parse = async (array) => {
                 price_to: vac.compensation?.to,
                 city: vac.area.name,
                 remote: remote,
-                exp: vac.workExperience,
+                exp: exp,
                 responsesCount: vac.responsesCount,
                 totalResponsesCount: vac.totalResponsesCount,
                 skills: skills,
@@ -154,7 +139,7 @@ const parsingRelatedVacancies = async (vacancyId) => {
     let i = 0;
     while (i < totalPages) {
         const result = await getData(vacancyId, i)
-        const vacArray = result.vacancies || []
+        const vacArray = result?.vacancies || []
         await parse(vacArray)
         i++
     }
@@ -165,6 +150,7 @@ const parsingRelatedVacancies = async (vacancyId) => {
 const infinityLoop = (start) => {
     fs.readFile(__dirname + '/workers/data/vacancies.txt', (err, data) => {
         const numbers = data.toString().trim().split('\n').map(Number)
+        if (start === numbers.length) return
         unuqueIdsSet = new Set(numbers)
         console.log(numbers)
         // begin(numbers.at(-1)).catch(e => console.log(e))

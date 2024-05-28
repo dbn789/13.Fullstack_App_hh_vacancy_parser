@@ -6,9 +6,9 @@ const Vacancy = ({ vacancy}) => {
     const { number, id, name, price_from, price_to, city, exp, remote,responsesCount, totalResponsesCount, skills} = vacancy;
     const [skillsFlag, setSkillsFlag] = useState(false)
    
-    let jobFound = (exp === 'noExperience' || (remote === 'remote' && exp !== 'moreThan6' && exp !== 'between3And6')) ? 'job-found' : '';
-    let notGood = (exp === 'moreThan6' || exp === 'between3And6') ? 'job-not-good' : ''
-    let title = (name.length > 52) ? name.slice(0, 52) + '...' : name
+    const jobFound = (exp === 'нет опыта') ? 'job-found' : '';
+    const notGood = (exp === 'более 6 лет' || exp === 'от 3 до 6 лет') ? 'job-not-good' : ''
+    const title = (name.length > 52) ? name.slice(0, 52) + '...' : name
     let price = `${price_from}-${price_to}`
 
    if (!price_from && !price_to) price = 'З/п не указана'
