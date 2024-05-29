@@ -54,7 +54,7 @@ const parse = async (array) => {
 
             switch (vac['@workSchedule']) {
                 case 'remote': { remote = 'УДАЛЁННАЯ РАБОТА'; break }
-                case 'full_day': { remote = 'ОФИС'; break }
+                case 'fullDay': { remote = 'ОФИС'; break }
                 case 'flexible': { remote = 'ГИБРИДНЫЙ ГРАФИК'; break }
                 default: { }
             }
@@ -160,18 +160,22 @@ const infinityLoop = (start) => {
     })
 }
 
-infinityLoop(0)
-
-
 
 app.get('/', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
-    emitter.once('new-vacancy', () => {
-        res.send(vacancyArray[counter - 1])
-    })
-
+    if (req.query.link) {
+        console.log(req.query.link)
+        fs.writeFile(__dirname + '/workers/data/vacancies.txt', req.query.link + '\n', 'utf-8', (err) => {
+            vacancyArray.length = 0;
+            counter = 0
+            !err ? infinityLoop(0) : {}
+        })
+    } else {
+        emitter.once('new-vacancy', () => {
+            res.send(vacancyArray[counter - 1])
+        })
+    }
 })
-
 
 
 app.listen(PORT, (req, res) => {

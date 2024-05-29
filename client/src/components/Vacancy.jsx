@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './vacancy.css';
 
 const Vacancy = ({ vacancy}) => {
@@ -38,4 +38,4 @@ const Vacancy = ({ vacancy}) => {
     );
 };
 
-export default React.memo(Vacancy);
+export default Vacancy;
