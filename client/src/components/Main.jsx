@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {Link, Outlet} from 'react-router-dom'
 import './main.css';
 import { useDispatch, useSelector } from 'react-redux';
 import VacancyList from './VacancyList';
@@ -53,15 +54,15 @@ const Main = () => {
         : <div>
             {length && !error && (
                 <>
-                <VacancyList vacancyPage={vacancyPage} />
+              <Outlet />
                 <div className="page-count">
                 {`${vacancyPage} / ${Math.floor( length / 20) + 1}`}
             </div>
             <div className="prev-page" onClick={handlePrev}>
-                {'<'}
+            <Link to={`/page/${vacancyPage - 1}`} style={{ textDecoration: 'none',color:'white' }}>{'<'}</Link>
             </div>
             <div className="next-page" onClick={handleNext}>
-                {'>'}
+            <Link to={`/page/${vacancyPage + 1}`} style={{ textDecoration: 'none', color:'white' }}>{'>'}</Link>
             </div>
             </>
             )}
@@ -72,3 +73,5 @@ const Main = () => {
 };
 
 export default Main;
+
+

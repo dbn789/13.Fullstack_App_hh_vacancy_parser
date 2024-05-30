@@ -1,11 +1,13 @@
 import React from 'react';
+import {useParams} from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import Vacancy from './Vacancy';
 import { v4 as uuidv4 } from 'uuid';
 import './main.css';
 
 
-const VacancyList = ({ vacancyPage }) => {
+const VacancyList = () => {
+const {vacancyPage = 1} = useParams()
 
     const state = useSelector((state) => state.hhReducer);
 
