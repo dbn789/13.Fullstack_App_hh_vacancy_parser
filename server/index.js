@@ -105,15 +105,16 @@ const run = async (firm, page) => {
 }
 
 const parsingVacancies = async (numArray) => {
-
+    let finded = 0
     for await (let numPage of numArray) {
         // const result = await run(numPage, 0)
         const result = await parsingRelatedVacancies(numPage)
+        finded += result
         result
             ? console.log(`Finded ${result} related vacancies in ${numPage}`)
             : console.log(`No related vacancies in ${numPage}`)
     }
-    infinityLoop(numArray.length)
+    infinityLoop(numArray.length, finded)
 }
 
 
@@ -135,6 +136,7 @@ const getData = async (vacancyId, page = 0) => {
 const parsingRelatedVacancies = async (vacancyId) => {
     const res = await getData(vacancyId)
     const totalPages = res.totalPages
+    const startCount = vacancyArray.length
     console.log(totalPages)
     let i = 0;
     while (i < totalPages) {
@@ -143,16 +145,17 @@ const parsingRelatedVacancies = async (vacancyId) => {
         await parse(vacArray)
         i++
     }
-    return res.resultsFound
+    return vacancyArray.length - startCount
 }
 
 
-const infinityLoop = (start) => {
+const infinityLoop = (start, findVacancies) => {
     fs.readFile(__dirname + '/workers/data/vacancies.txt', (err, data) => {
         const numbers = data.toString().trim().split('\n').map(Number)
-        if (start === numbers.length) return
+        console.log('FINDED', findVacancies, 'START', start)
+        if (start && !findVacancies) return
         unuqueIdsSet = new Set(numbers)
-        console.log(numbers)
+
         // begin(numbers.at(-1)).catch(e => console.log(e))
         // const resumeId = 'f80c29ee000cb7201b0087cb9a38386a30577a';
         parsingVacancies(numbers.slice(start));
@@ -168,7 +171,7 @@ app.get('/', (req, res) => {
         fs.writeFile(__dirname + '/workers/data/vacancies.txt', req.query.link + '\n', 'utf-8', (err) => {
             vacancyArray.length = 0;
             counter = 0
-            !err ? infinityLoop(0) : {}
+            !err ? infinityLoop(0, 0) : {}
         })
     } else {
         emitter.once('new-vacancy', () => {

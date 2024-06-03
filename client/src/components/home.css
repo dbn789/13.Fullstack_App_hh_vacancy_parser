@@ -9,11 +9,19 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    border-radius: 10px;
 }  
-
+header{
+    font-size: 35px;
+    text-align: center;
+}
 input, button{
     font-size: 30px;
     display: block;
-    width: 100%;
+    width: 80%;
     margin-top: 20px;
+}
+
+button{
+    cursor: pointer;
 }
